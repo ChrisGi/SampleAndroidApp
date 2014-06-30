@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import model.User;
 
@@ -12,8 +13,11 @@ import model.User;
  */
 public class DataBaseHelper extends SQLiteOpenHelper{
 
+    private static final String TAG = DataBaseHelper.class.getSimpleName();
+
     private static final String DATABASE_NAME = "testdb.db";
     private static final int DATABASE_VERSION = 1;
+
 
     private static DataBaseHelper instance;
 
@@ -44,6 +48,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        Log.i(TAG, "onCreate");
 
         try {
 
@@ -55,7 +60,6 @@ public class DataBaseHelper extends SQLiteOpenHelper{
             db.execSQL("PRAGMA foreign_keys=ON;");
 
             db.execSQL(userTable);
-
 
         }catch (SQLiteException ex){
             throw new SQLiteException(ex.getMessage());
