@@ -1,12 +1,16 @@
 package com.aeragi.myapplication;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBarActivity;
@@ -19,6 +23,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import model.User;
+import services.TestIntentService;
 
 
 public class MyActivity extends ActionBarActivity {
@@ -62,6 +67,7 @@ public class MyActivity extends ActionBarActivity {
 
         //private static final String TAG = PlaceholderFragment.class.getSimpleName();
         private static final int LOADER_ID = 1;
+        private static final String TEST_INTENT_FILTER = "Placeholder-receive-intent-filter";
 
         UserListAdapter listAdapter;
 
@@ -76,6 +82,7 @@ public class MyActivity extends ActionBarActivity {
 
             listAdapter = new UserListAdapter(getActivity(), R.layout.user_info_row, null, new String[]{}, new int[]{}, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
+            TestIntentService.startActionTest(getActivity(), "http://ip.jsontest.com/", TEST_INTENT_FILTER);
 
 //            ContentValues values = new ContentValues();
 //            values.put(User.COLUMN_NAME, "admin");
@@ -84,6 +91,20 @@ public class MyActivity extends ActionBarActivity {
 //
 //            Log.i(TAG, u.toString());
         }
+
+        @Override
+        public void onStart() {
+            super.onStart();
+
+            LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, new IntentFilter(TEST_INTENT_FILTER));
+        }
+
+        private final BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+            }
+        };
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -139,6 +160,13 @@ public class MyActivity extends ActionBarActivity {
 
             }
         };
+
+        @Override
+        public void onPause() {
+            super.onPause();
+
+            LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mMessageReceiver);
+        }
 
         private class UserListAdapter extends SimpleCursorAdapter {
 
